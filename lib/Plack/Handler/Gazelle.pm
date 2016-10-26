@@ -107,6 +107,9 @@ sub setup_listener {
 
 sub run {
     my($self, $app) = @_;
+
+    $0 = 'gazelle master';
+
     $self->setup_listener();
     # use Parallel::Prefork
     my %pm_args = (
@@ -134,6 +137,8 @@ sub run {
     };
     while ($pm->signal_received !~ /^(TERM|USR1)$/) {
         $pm->start(sub{
+            $0 = 'gazelle worker';
+
             srand((rand() * 2 ** 30) ^ $$ ^ time);
 
             my $max_reqs_per_child = $self->_calc_minmax_per_child(
